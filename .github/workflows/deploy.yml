@@ -41,18 +41,18 @@ jobs:
           
       - name: Copy game files to deployment directory
         run: |
-          # Copy main game files
-          cp index_complete.html _site/index.html
+          # Copy main game files - using index_fixed.html as default
+          cp index_fixed.html _site/index.html
+          cp game_fixed.js _site/
           cp audioManager.js _site/
-          cp game_final.js _site/
           cp style.css _site/
           cp favicon.ico _site/
           
           # Copy additional versions
           cp index.html _site/original.html
-          cp index_fixed.html _site/fixed.html
+          cp index_complete.html _site/complete.html
+          cp game_final.js _site/
           cp game.js _site/
-          cp game_fixed.js _site/
           
           # Copy test suites
           cp test_complete.html _site/test.html
@@ -134,33 +134,33 @@ jobs:
                   
                   <div class="version-grid">
                       <div class="version-card">
-                          <h3>🎮 Main Game</h3>
-                          <p>Complete version with fixed audio system and enhanced features.</p>
+                          <h3>🎮 Main Game (Fixed)</h3>
+                          <p>Default version with reliable audio restart functionality and improved timing.</p>
                           <a href="index.html" class="btn">Play Now</a>
+                      </div>
+                      
+                      <div class="version-card">
+                          <h3>🚀 Complete Version</h3>
+                          <p>Enhanced version with AudioManager class and comprehensive state management.</p>
+                          <a href="complete.html" class="btn btn-primary">Play Complete</a>
+                      </div>
+                      
+                      <div class="version-card">
+                          <h3>🕹️ Original Version</h3>
+                          <p>The original game version before audio fixes (has restart issues).</p>
+                          <a href="original.html" class="btn">Original Game</a>
                       </div>
                       
                       <div class="version-card">
                           <h3>🧪 Test Suite</h3>
                           <p>Comprehensive audio testing and debugging tools.</p>
-                          <a href="test.html" class="btn btn-primary">Run Tests</a>
+                          <a href="test.html" class="btn btn-warning">Run Tests</a>
                       </div>
                       
                       <div class="version-card">
                           <h3>📊 Audio Tests</h3>
                           <p>Detailed audio system testing interface.</p>
-                          <a href="test_audio_system.html" class="btn btn-warning">Audio Tests</a>
-                      </div>
-                      
-                      <div class="version-card">
-                          <h3>🕹️ Original Version</h3>
-                          <p>The original game version before audio fixes.</p>
-                          <a href="original.html" class="btn">Original Game</a>
-                      </div>
-                      
-                      <div class="version-card">
-                          <h3>🔧 Fixed Version</h3>
-                          <p>Intermediate version with partial audio fixes.</p>
-                          <a href="fixed.html" class="btn">Fixed Version</a>
+                          <a href="test_audio_system.html" class="btn btn-info">Audio Tests</a>
                       </div>
                   </div>
                   

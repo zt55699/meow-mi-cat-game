@@ -7,7 +7,9 @@ A fun and engaging 2D side-scrolling web game built with Phaser 3, featuring a c
 **Live Demo**: https://zt55699.github.io/meow-mi-cat-game/
 
 ### Available Versions:
-- 🎮 [**Main Game**](https://zt55699.github.io/meow-mi-cat-game/) - Complete version with fixed audio
+- 🎮 [**Main Game (Fixed)**](https://zt55699.github.io/meow-mi-cat-game/) - Default version with reliable audio restart
+- 🚀 [**Complete Version**](https://zt55699.github.io/meow-mi-cat-game/complete.html) - Enhanced AudioManager version
+- 🕹️ [**Original Version**](https://zt55699.github.io/meow-mi-cat-game/original.html) - Original with restart issues
 - 📋 [**All Versions**](https://zt55699.github.io/meow-mi-cat-game/info.html) - Overview of all game versions
 - 🧪 [**Test Suite**](https://zt55699.github.io/meow-mi-cat-game/test.html) - Comprehensive testing tools
 - 📊 [**Audio Tests**](https://zt55699.github.io/meow-mi-cat-game/test_audio_system.html) - Audio system testing

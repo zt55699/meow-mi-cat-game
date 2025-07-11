@@ -2,6 +2,36 @@
 
 A fun and engaging 2D side-scrolling web game built with Phaser 3, featuring a cute cat character that jumps, collects fish, and avoids obstacles.
 
+## 🌐 Play Online
+
+**Live Demo**: https://zt55699.github.io/meow-mi-cat-game/
+
+### Available Versions:
+- 🎮 [**Main Game**](https://zt55699.github.io/meow-mi-cat-game/) - Complete version with fixed audio
+- 📋 [**All Versions**](https://zt55699.github.io/meow-mi-cat-game/info.html) - Overview of all game versions
+- 🧪 [**Test Suite**](https://zt55699.github.io/meow-mi-cat-game/test.html) - Comprehensive testing tools
+- 📊 [**Audio Tests**](https://zt55699.github.io/meow-mi-cat-game/test_audio_system.html) - Audio system testing
+
+## 🚀 Auto-Deployment
+
+This repository uses GitHub Actions for automatic deployment to GitHub Pages when new tags are created.
+
+### How to Deploy a New Version:
+
+1. **Create and push a new tag:**
+   ```bash
+   git tag -a v1.0.0 -m "Release version 1.0.0"
+   git push origin v1.0.0
+   ```
+
+2. **GitHub Actions will automatically:**
+   - Build the game files
+   - Deploy to GitHub Pages
+   - Update the live demo
+
+3. **Manual deployment:**
+   You can also trigger deployment manually from the GitHub Actions tab.
+
 ## 🎮 Game Features
 
 ### Core Gameplay

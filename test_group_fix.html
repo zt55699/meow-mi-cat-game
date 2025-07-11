@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Group Reference Fix Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
+</head>
+<body>
+    <div id="logs"></div>
+    <div id="game"></div>
+    
+    <script>
+        const logs = document.getElementById('logs');
+        function log(msg) {
+            logs.innerHTML += new Date().toLocaleTimeString() + ': ' + msg + '<br>';
+            logs.scrollTop = logs.scrollHeight;
+            console.log(msg);
+        }
+        
+        let obstacles, fish;
+        let spawnCount = 0;
+        
+        const config = {
+            type: Phaser.AUTO,
+            width: 400,
+            height: 300,
+            parent: 'game',
+            physics: { default: 'arcade' },
+            scene: {
+                create: function() {
+                    log('Scene created');
+                    
+                    // Initial group creation (like in create())
+                    obstacles = this.physics.add.group();
+                    fish = this.physics.add.group();
+                    log(`Initial groups created - obstacles: ${!!obstacles}, fish: ${!!fish}`);
+                    
+                    // Test spawn button
+                    const spawnBtn = this.add.text(100, 100, 'SPAWN', { fill: '#00ff00', fontSize: '16px' });
+                    spawnBtn.setInteractive();
+                    spawnBtn.on('pointerdown', () => testSpawn(this));
+                    
+                    // Restart button (simulates scene restart issue)
+                    const restartBtn = this.add.text(100, 150, 'RESTART', { fill: '#ff0000', fontSize: '16px' });
+                    restartBtn.setInteractive();
+                    restartBtn.on('pointerdown', () => {
+                        log('Restarting scene...');
+                        this.scene.restart();
+                    });
+                    
+                    // Start game button (simulates startGame function)
+                    const startBtn = this.add.text(100, 200, 'START GAME', { fill: '#0000ff', fontSize: '16px' });
+                    startBtn.setInteractive();
+                    startBtn.on('pointerdown', () => startGameTest(this));
+                }
+            }
+        };
+        
+        function startGameTest(scene) {
+            log('🚀 Running startGame simulation...');
+            
+            // OLD CODE (broken): obstacles.clear(true, true);
+            // NEW CODE (fixed): Recreate groups
+            obstacles = scene.physics.add.group();
+            fish = scene.physics.add.group();
+            
+            log(`✅ Groups recreated - obstacles: ${!!obstacles}, fish: ${!!fish}`);
+        }
+        
+        function testSpawn(scene) {
+            spawnCount++;
+            log(`Spawning object #${spawnCount}...`);
+            
+            if (!obstacles) {
+                log('❌ No obstacles group!');
+                return;
+            }
+            
+            // Create simple rectangle texture
+            const graphics = scene.add.graphics();
+            graphics.fillStyle(0xff0000);
+            graphics.fillRect(0, 0, 30, 30);
+            graphics.generateTexture('box', 30, 30);
+            graphics.destroy();
+            
+            const obj = obstacles.create(200, 150, 'box');
+            
+            log(`Object created: ${!!obj}`);
+            log(`Object in group: ${obstacles.children.entries.includes(obj)}`);
+            log(`Group count: ${obstacles.children.entries.length}`);
+            
+            if (obstacles.children.entries.length > 0) {
+                log('✅ SUCCESS: Object properly added to group!');
+            } else {
+                log('❌ FAILED: Object not in group!');
+            }
+        }
+        
+        const game = new Phaser.Game(config);
+        log('Group fix test initialized');
+        log('1. Click SPAWN to test initial spawn');
+        log('2. Click RESTART to simulate scene restart'); 
+        log('3. Click START GAME to recreate groups');
+        log('4. Click SPAWN again to test if fix works');
+    </script>
+</body>
+</html>

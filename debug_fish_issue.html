@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Fish Issue</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        #logs { 
+            height: 200px; 
+            overflow-y: scroll; 
+            border: 1px solid #ccc; 
+            padding: 10px; 
+            margin-bottom: 10px;
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Debug Fish Spawning Issue</h1>
+    <div id="logs"></div>
+    <div id="game"></div>
+    
+    <script>
+        const logs = document.getElementById('logs');
+        function log(msg) {
+            logs.innerHTML += new Date().toLocaleTimeString() + ': ' + msg + '<br>';
+            logs.scrollTop = logs.scrollHeight;
+            console.log(msg);
+        }
+        
+        let cat, fish, gameStarted = false;
+        let testDistance = 0;
+        
+        const config = {
+            type: Phaser.AUTO,
+            width: 600,
+            height: 400,
+            parent: 'game',
+            physics: { default: 'arcade', arcade: { gravity: { y: 800 } } },
+            scene: {
+                create: function() {
+                    log('🎮 Scene created');
+                    
+                    // Create cat
+                    cat = this.physics.add.sprite(200, 300, null);
+                    const catGraphics = this.add.graphics();
+                    catGraphics.fillStyle(0xff6600);
+                    catGraphics.fillCircle(20, 20, 20);
+                    catGraphics.generateTexture('cat', 40, 40);
+                    cat.setTexture('cat');
+                    log('🐱 Cat created at 200, 300');
+                    
+                    // Create fish group
+                    fish = this.physics.add.group();
+                    log('🐟 Fish group created');
+                    
+                    // Add overlap detection
+                    this.physics.add.overlap(cat, fish, (cat, fish) => {
+                        log('🎯 FISH COLLECTED!');
+                        fish.destroy();
+                    });
+                    
+                    // Start button
+                    const startBtn = this.add.text(100, 100, 'START', { 
+                        fill: '#00ff00', fontSize: '20px', backgroundColor: '#000000', padding: {x: 10, y: 5}
+                    });
+                    startBtn.setInteractive();
+                    startBtn.on('pointerdown', () => {
+                        startBtn.destroy();
+                        startTest(this);
+                    });
+                },
+                
+                update: function() {
+                    if (!gameStarted) return;
+                    
+                    // Cat movement (like in main game)
+                    cat.x += 3;
+                    testDistance += 3;
+                    
+                    // Log movement every 100 distance units
+                    if (Math.floor(testDistance) % 100 === 0) {
+                        log(`🏃 Cat at x: ${cat.x}, distance: ${Math.floor(testDistance)}`);
+                    }
+                    
+                    // Test if cat is still moving after fish spawn
+                    if (testDistance > 300 && testDistance < 320) {
+                        log('⚠️ CHECK: Cat should still be moving after fish spawn!');
+                    }
+                }
+            }
+        };
+        
+        function startTest(scene) {
+            log('🚀 Starting movement test...');
+            gameStarted = true;
+            
+            // Create fish texture
+            const fishGraphics = scene.add.graphics();
+            fishGraphics.fillStyle(0x0066ff);
+            fishGraphics.fillEllipse(15, 10, 30, 20);
+            fishGraphics.generateTexture('fish', 30, 20);
+            fishGraphics.destroy();
+            
+            // Spawn fish after 1 second (faster than normal for testing)
+            setTimeout(() => {
+                log('🐟 SPAWNING FISH - testing if this breaks movement...');
+                const f = fish.create(400, 250, 'fish');
+                f.body.setAllowGravity(false);
+                f.body.setImmovable(true);
+                log(`🐟 Fish spawned at x:${f.x}, y:${f.y}, visible:${f.visible}`);
+                
+                // Check if fish is properly added
+                log(`🔍 Fish group count: ${fish.children.entries.length}`);
+                log(`🔍 Fish in scene: ${scene.children.exists(f)}`);
+            }, 1000);
+        }
+        
+        const game = new Phaser.Game(config);
+        log('🔧 Debug test initialized - click START and watch for movement stopping after fish spawn');
+    </script>
+</body>
+</html>

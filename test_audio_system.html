@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio System Test - Meow Mi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1, h2 {
+            color: #333;
+        }
+        
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .primary { background: #4CAF50; color: white; }
+        .primary:hover { background: #45a049; }
+        
+        .danger { background: #f44336; color: white; }
+        .danger:hover { background: #da190b; }
+        
+        .info { background: #2196F3; color: white; }
+        .info:hover { background: #0b7dda; }
+        
+        .warning { background: #ff9800; color: white; }
+        .warning:hover { background: #e68900; }
+        
+        .log {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px 5px;
+        }
+        
+        .log-info { color: #2196F3; }
+        .log-success { color: #4CAF50; }
+        .log-error { color: #f44336; }
+        .log-warning { color: #ff9800; }
+        
+        .status {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .status-label {
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .status-value {
+            color: #333;
+        }
+        
+        #game-container {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .test-results {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background: #e8f5e9;
+            border: 1px solid #4CAF50;
+        }
+        
+        .test-fail {
+            background: #ffebee;
+            border-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎵 Meow Mi Audio System Test Suite</h1>
+    
+    <div class="container">
+        <div class="panel">
+            <h2>Audio Controls</h2>
+            <button class="primary" onclick="testInit()">Initialize Audio</button>
+            <button class="info" onclick="testStartMusic()">Start Music</button>
+            <button class="danger" onclick="testStopMusic()">Stop Music</button>
+            <button class="warning" onclick="testRestartMusic()">Restart Music</button>
+            <br><br>
+            <button class="info" onclick="testSoundEffects()">Test Sound Effects</button>
+            <button class="warning" onclick="testRapidRestart()">Rapid Restart Test</button>
+            <button class="danger" onclick="testStressTest()">Stress Test</button>
+            
+            <div class="status">
+                <span class="status-label">Audio Context:</span>
+                <span class="status-value" id="contextStatus">Not initialized</span>
+                
+                <span class="status-label">Music State:</span>
+                <span class="status-value" id="musicStatus">Stopped</span>
+                
+                <span class="status-label">Current Track:</span>
+                <span class="status-value" id="trackStatus">1</span>
+                
+                <span class="status-label">Test Status:</span>
+                <span class="status-value" id="testStatus">Ready</span>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Test Log</h2>
+            <div class="log" id="testLog"></div>
+            <button class="info" onclick="clearLog()">Clear Log</button>
+        </div>
+        
+        <div class="panel">
+            <h2>Game Controls</h2>
+            <button class="primary" onclick="simulateGameStart()">Start Game</button>
+            <button class="danger" onclick="simulateGameOver()">Simulate Game Over</button>
+            <button class="warning" onclick="simulateRestart()">Simulate Restart</button>
+            <button class="info" onclick="checkGameState()">Check Game State</button>
+        </div>
+        
+        <div class="panel">
+            <h2>Automated Tests</h2>
+            <button class="primary" onclick="runAllTests()">Run All Tests</button>
+            <div class="test-results" id="testResults" style="display: none;"></div>
+        </div>
+    </div>
+    
+    <div id="game-container">
+        <h2>Game Preview</h2>
+        <div id="game"></div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
+    <script src="game_fixed.js"></script>
+    <script>
+        // Test utilities
+        function log(message, type = 'info') {
+            const logEl = document.getElementById('testLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logEl.appendChild(entry);
+            logEl.scrollTop = logEl.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        function updateStatus() {
+            document.getElementById('contextStatus').textContent = 
+                audioManager.audioContext ? audioManager.audioContext.state : 'Not initialized';
+            document.getElementById('musicStatus').textContent = audioManager.musicState;
+            document.getElementById('trackStatus').textContent = audioManager.currentMusicTrack;
+        }
+        
+        function clearLog() {
+            document.getElementById('testLog').innerHTML = '';
+            log('Log cleared', 'info');
+        }
+        
+        // Audio tests
+        async function testInit() {
+            log('Initializing audio system...', 'info');
+            try {
+                await audioManager.init();
+                log('Audio initialized successfully', 'success');
+                updateStatus();
+            } catch (error) {
+                log(`Failed to initialize: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testStartMusic() {
+            log('Starting music...', 'info');
+            try {
+                await audioManager.startMusic();
+                log('Music started successfully', 'success');
+                updateStatus();
+            } catch (error) {
+                log(`Failed to start music: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testStopMusic() {
+            log('Stopping music...', 'info');
+            try {
+                await audioManager.stopMusic();
+                log('Music stopped successfully', 'success');
+                updateStatus();
+            } catch (error) {
+                log(`Failed to stop music: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testRestartMusic() {
+            log('Testing music restart...', 'info');
+            try {
+                log('Stopping current music...', 'info');
+                await audioManager.stopMusic();
+                
+                log('Waiting 500ms...', 'info');
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                log('Starting music again...', 'info');
+                audioManager.changeTrack();
+                await audioManager.startMusic();
+                
+                log('Music restarted successfully', 'success');
+                updateStatus();
+            } catch (error) {
+                log(`Failed to restart music: ${error.message}`, 'error');
+            }
+        }
+        
+        function testSoundEffects() {
+            log('Testing sound effects...', 'info');
+            const effects = ['jump', 'collect', 'gameOver', 'win'];
+            let index = 0;
+            
+            const playNext = () => {
+                if (index < effects.length) {
+                    const effect = effects[index];
+                    log(`Playing ${effect} sound...`, 'info');
+                    audioManager.playEffect(effect);
+                    index++;
+                    setTimeout(playNext, 1000);
+                } else {
+                    log('All sound effects tested', 'success');
+                }
+            };
+            
+            playNext();
+        }
+        
+        async function testRapidRestart() {
+            log('Starting rapid restart test...', 'warning');
+            document.getElementById('testStatus').textContent = 'Running rapid restart...';
+            
+            for (let i = 0; i < 5; i++) {
+                log(`Restart ${i + 1}/5...`, 'info');
+                await audioManager.stopMusic();
+                await new Promise(resolve => setTimeout(resolve, 100));
+                audioManager.changeTrack();
+                await audioManager.startMusic();
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            log('Rapid restart test completed', 'success');
+            document.getElementById('testStatus').textContent = 'Ready';
+            updateStatus();
+        }
+        
+        async function testStressTest() {
+            log('Starting stress test...', 'warning');
+            document.getElementById('testStatus').textContent = 'Running stress test...';
+            
+            // Test multiple simultaneous start attempts
+            log('Testing simultaneous starts...', 'info');
+            const promises = [];
+            for (let i = 0; i < 3; i++) {
+                promises.push(audioManager.startMusic());
+            }
+            await Promise.all(promises);
+            log('Simultaneous starts handled', 'success');
+            
+            // Test rapid start/stop
+            log('Testing rapid start/stop...', 'info');
+            for (let i = 0; i < 10; i++) {
+                audioManager.startMusic();
+                await new Promise(resolve => setTimeout(resolve, 50));
+                audioManager.stopMusic();
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+            log('Rapid start/stop completed', 'success');
+            
+            document.getElementById('testStatus').textContent = 'Ready';
+            updateStatus();
+        }
+        
+        // Game simulation
+        function simulateGameStart() {
+            log('Simulating game start...', 'info');
+            if (game && game.scene.scenes[0]) {
+                startGame(game.scene.scenes[0]);
+                log('Game started', 'success');
+            } else {
+                log('Game not initialized', 'error');
+            }
+        }
+        
+        function simulateGameOver() {
+            log('Simulating game over...', 'info');
+            gameOver = true;
+            audioManager.stopMusic();
+            log('Game over state set', 'success');
+        }
+        
+        function simulateRestart() {
+            log('Simulating game restart...', 'info');
+            if (game && game.scene.scenes[0]) {
+                restartGame(game.scene.scenes[0]);
+                log('Game restarted', 'success');
+            } else {
+                log('Game not initialized', 'error');
+            }
+        }
+        
+        function checkGameState() {
+            log('=== Game State ===', 'info');
+            log(`Game Started: ${gameStarted}`, 'info');
+            log(`Game Over: ${gameOver}`, 'info');
+            log(`Game Won: ${gameWon}`, 'info');
+            log(`Score: ${score}`, 'info');
+            log(`Distance: ${distance}`, 'info');
+            log('==================', 'info');
+            updateStatus();
+        }
+        
+        // Automated tests
+        async function runAllTests() {
+            const results = document.getElementById('testResults');
+            results.style.display = 'block';
+            results.innerHTML = '<h3>Running automated tests...</h3>';
+            
+            const tests = [
+                {
+                    name: 'Audio Initialization',
+                    run: async () => {
+                        await audioManager.init();
+                        return audioManager.audioContext !== null;
+                    }
+                },
+                {
+                    name: 'Music Start/Stop',
+                    run: async () => {
+                        await audioManager.startMusic();
+                        const playing = audioManager.musicState === 'playing';
+                        await audioManager.stopMusic();
+                        const stopped = audioManager.musicState === 'stopped';
+                        return playing && stopped;
+                    }
+                },
+                {
+                    name: 'Music Restart',
+                    run: async () => {
+                        await audioManager.startMusic();
+                        await audioManager.stopMusic();
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        await audioManager.startMusic();
+                        return audioManager.musicState === 'playing';
+                    }
+                },
+                {
+                    name: 'Track Change',
+                    run: async () => {
+                        const initialTrack = audioManager.currentMusicTrack;
+                        audioManager.changeTrack();
+                        return audioManager.currentMusicTrack !== initialTrack;
+                    }
+                },
+                {
+                    name: 'No Overlapping Music',
+                    run: async () => {
+                        // Start music multiple times rapidly
+                        for (let i = 0; i < 3; i++) {
+                            audioManager.startMusic();
+                            await new Promise(resolve => setTimeout(resolve, 50));
+                        }
+                        // Should still have only one music instance
+                        return audioManager.musicState === 'playing';
+                    }
+                }
+            ];
+            
+            let passed = 0;
+            let failed = 0;
+            
+            for (const test of tests) {
+                try {
+                    log(`Running test: ${test.name}`, 'info');
+                    const result = await test.run();
+                    if (result) {
+                        log(`✓ ${test.name} passed`, 'success');
+                        passed++;
+                    } else {
+                        log(`✗ ${test.name} failed`, 'error');
+                        failed++;
+                    }
+                } catch (error) {
+                    log(`✗ ${test.name} error: ${error.message}`, 'error');
+                    failed++;
+                }
+                
+                // Clean up between tests
+                await audioManager.stopMusic();
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            
+            const allPassed = failed === 0;
+            results.className = allPassed ? 'test-results' : 'test-results test-fail';
+            results.innerHTML = `
+                <h3>${allPassed ? '✓ All Tests Passed!' : '✗ Some Tests Failed'}</h3>
+                <p>Passed: ${passed} | Failed: ${failed}</p>
+            `;
+            
+            updateStatus();
+        }
+        
+        // Initialize on load
+        window.addEventListener('load', () => {
+            log('Test suite loaded', 'info');
+            updateStatus();
+            
+            // Auto-update status
+            setInterval(updateStatus, 1000);
+        });
+    </script>
+</body>
+</html>

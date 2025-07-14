@@ -41,22 +41,12 @@ jobs:
           
       - name: Copy game files to deployment directory
         run: |
-          # Copy main game files - using index_fixed.html as default
-          cp index_fixed.html _site/index.html
-          cp game_fixed.js _site/
+          # Copy main game files
+          cp index.html _site/
+          cp game.js _site/
           cp audioManager.js _site/
           cp style.css _site/
           cp favicon.ico _site/
-          
-          # Copy additional versions
-          cp index.html _site/original.html
-          cp index_complete.html _site/complete.html
-          cp game_final.js _site/
-          cp game.js _site/
-          
-          # Copy test suites
-          cp test_complete.html _site/test.html
-          cp test_audio_system.html _site/
           
           # Copy documentation
           cp README.md _site/
@@ -74,7 +64,7 @@ jobs:
           <head>
               <meta charset="UTF-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Meow Mi - Game Versions</title>
+              <title>Meow Mi - Cat Runner Game</title>
               <style>
                   body {
                       font-family: Arial, sans-serif;
@@ -90,41 +80,32 @@ jobs:
                       padding: 30px;
                       border-radius: 15px;
                       backdrop-filter: blur(10px);
-                  }
-                  h1 { text-align: center; font-size: 2.5em; margin-bottom: 10px; }
-                  .subtitle { text-align: center; margin-bottom: 30px; opacity: 0.9; }
-                  .version-grid {
-                      display: grid;
-                      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                      gap: 20px;
-                      margin: 30px 0;
-                  }
-                  .version-card {
-                      background: rgba(255,255,255,0.15);
-                      padding: 20px;
-                      border-radius: 10px;
                       text-align: center;
+                  }
+                  h1 { font-size: 2.5em; margin-bottom: 10px; }
+                  .subtitle { margin-bottom: 30px; opacity: 0.9; }
+                  .game-card {
+                      background: rgba(255,255,255,0.15);
+                      padding: 30px;
+                      border-radius: 10px;
+                      margin: 30px 0;
                       transition: transform 0.3s;
                   }
-                  .version-card:hover { transform: translateY(-5px); }
-                  .version-card h3 { margin-top: 0; color: #ffeb3b; }
+                  .game-card:hover { transform: translateY(-5px); }
                   .btn {
                       display: inline-block;
-                      padding: 12px 24px;
+                      padding: 15px 30px;
                       background: #4CAF50;
                       color: white;
                       text-decoration: none;
                       border-radius: 25px;
                       font-weight: bold;
-                      margin: 5px;
+                      font-size: 18px;
+                      margin: 10px;
                       transition: background 0.3s;
                   }
                   .btn:hover { background: #45a049; }
-                  .btn-primary { background: #2196F3; }
-                  .btn-primary:hover { background: #0b7dda; }
-                  .btn-warning { background: #ff9800; }
-                  .btn-warning:hover { background: #e68900; }
-                  .footer { text-align: center; margin-top: 40px; opacity: 0.8; }
+                  .footer { margin-top: 40px; opacity: 0.8; }
               </style>
           </head>
           <body>
@@ -132,36 +113,11 @@ jobs:
                   <h1>🐱 Meow Mi</h1>
                   <p class="subtitle">2D Side-Scrolling Cat Runner Game</p>
                   
-                  <div class="version-grid">
-                      <div class="version-card">
-                          <h3>🎮 Main Game (Fixed)</h3>
-                          <p>Default version with reliable audio restart functionality and improved timing.</p>
-                          <a href="index.html" class="btn">Play Now</a>
-                      </div>
-                      
-                      <div class="version-card">
-                          <h3>🚀 Complete Version</h3>
-                          <p>Enhanced version with AudioManager class and comprehensive state management.</p>
-                          <a href="complete.html" class="btn btn-primary">Play Complete</a>
-                      </div>
-                      
-                      <div class="version-card">
-                          <h3>🕹️ Original Version</h3>
-                          <p>The original game version before audio fixes (has restart issues).</p>
-                          <a href="original.html" class="btn">Original Game</a>
-                      </div>
-                      
-                      <div class="version-card">
-                          <h3>🧪 Test Suite</h3>
-                          <p>Comprehensive audio testing and debugging tools.</p>
-                          <a href="test.html" class="btn btn-warning">Run Tests</a>
-                      </div>
-                      
-                      <div class="version-card">
-                          <h3>📊 Audio Tests</h3>
-                          <p>Detailed audio system testing interface.</p>
-                          <a href="test_audio_system.html" class="btn btn-info">Audio Tests</a>
-                      </div>
+                  <div class="game-card">
+                      <h3>🎮 Play the Game</h3>
+                      <p>Jump, collect fish, and avoid obstacles in this fun side-scrolling adventure!</p>
+                      <p>Features reliable audio system, smooth gameplay, and responsive design.</p>
+                      <a href="index.html" class="btn">Play Now</a>
                   </div>
                   
                   <div class="footer">
@@ -196,8 +152,6 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Available Pages:" >> $GITHUB_STEP_SUMMARY
           echo "- 🎮 [Main Game](${{ steps.deployment.outputs.page_url }})" >> $GITHUB_STEP_SUMMARY
-          echo "- 📋 [All Versions](${{ steps.deployment.outputs.page_url }}info.html)" >> $GITHUB_STEP_SUMMARY
-          echo "- 🧪 [Test Suite](${{ steps.deployment.outputs.page_url }}test.html)" >> $GITHUB_STEP_SUMMARY
-          echo "- 📊 [Audio Tests](${{ steps.deployment.outputs.page_url }}test_audio_system.html)" >> $GITHUB_STEP_SUMMARY
+          echo "- 📋 [Game Info](${{ steps.deployment.outputs.page_url }}info.html)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "🏷️ **Tag**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY

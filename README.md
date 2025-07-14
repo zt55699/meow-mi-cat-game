@@ -1,18 +1,12 @@
 # Meow Mi - 2D Side-Scrolling Cat Game 🐱
 
-A fun and engaging 2D side-scrolling web game built with Phaser 3, featuring a cute cat character that jumps, collects fish, and avoids obstacles.
+A fun and engaging 2D side-scrolling web game built with Phaser 3, featuring a cute cat character that jumps, collects fish, and avoids obstacles. **Optimized for iPhone 14/15 and mobile devices!**
 
 ## 🌐 Play Online
 
 **Live Demo**: https://zt55699.github.io/meow-mi-cat-game/
 
-### Available Versions:
-- 🎮 [**Main Game (Fixed)**](https://zt55699.github.io/meow-mi-cat-game/) - Default version with reliable audio restart
-- 🚀 [**Complete Version**](https://zt55699.github.io/meow-mi-cat-game/complete.html) - Enhanced AudioManager version
-- 🕹️ [**Original Version**](https://zt55699.github.io/meow-mi-cat-game/original.html) - Original with restart issues
-- 📋 [**All Versions**](https://zt55699.github.io/meow-mi-cat-game/info.html) - Overview of all game versions
-- 🧪 [**Test Suite**](https://zt55699.github.io/meow-mi-cat-game/test.html) - Comprehensive testing tools
-- 📊 [**Audio Tests**](https://zt55699.github.io/meow-mi-cat-game/test_audio_system.html) - Audio system testing
+A fun and engaging 2D side-scrolling web game with reliable audio system and smooth gameplay. **Perfect for mobile gaming on iPhone 14/15!**
 
 ## 🚀 Auto-Deployment
 
@@ -38,7 +32,11 @@ This repository uses GitHub Actions for automatic deployment to GitHub Pages whe
 
 ### Core Gameplay
 - **Side-scrolling action**: Cat moves horizontally through an endless scrolling world
-- **Jump mechanics**: Click or tap anywhere to make the cat jump
+- **Variable jump mechanics**: Quick tap = small jump, hold = charge jump power!
+- **Smart visual feedback**: Charge indicator only appears for longer presses (150ms+)
+- **Intuitive controls**: Quick taps feel responsive without visual clutter
+- **Enhanced responsiveness**: Reduced bounce time by 50% for faster input response
+- **Clear audio feedback**: Distinct sound effects for valid vs. invalid jump attempts
 - **Obstacle avoidance**: Avoid red boxes to survive
 - **Fish collection**: Collect blue fish to increase your score
 - **Win condition**: Reach 500 meters to win the game
@@ -47,9 +45,12 @@ This repository uses GitHub Actions for automatic deployment to GitHub Pages whe
 ### Visual & Audio
 - **Cute cat sprite**: Emoji-based cat character (🐱)
 - **Smooth animations**: Cat tilts during jumps and has idle animations
-- **Sound effects**: Jump, collect, game over, and victory sounds
+- **Variable jump sounds**: Sound duration reflects jump charge level (longer = more charged)
+- **Continuous charging sound**: Sustained audio that builds during charge (150ms+ hold)
+- **Rich sound effects**: Jump, collect, game over, victory, and feedback sounds
 - **Background music**: Multiple music tracks that change during gameplay
-- **Responsive design**: Works on desktop and mobile devices
+- **Mobile-optimized**: Specially designed for iPhone 14/15 screen sizes
+- **Responsive design**: Perfect touch controls and responsive layout
 
 ### Technical Features
 - **Camera system**: Smooth camera following with cat movement
@@ -57,30 +58,48 @@ This repository uses GitHub Actions for automatic deployment to GitHub Pages whe
 - **Spawn system**: Dynamic obstacle and fish spawning
 - **State management**: Proper game state handling (start, playing, game over, win)
 - **Restart functionality**: Full game restart without page reload
+- **Audio feedback system**: Clear sound cues for all player interactions
+- **Optimized physics**: Reduced bounce for more responsive controls
 
 ## 🗂️ Project Structure
 
 ```
 meow_mi/
 ├── index.html              # Main HTML file
+├── game.js                 # Main game logic with audio system
+├── audioManager.js         # Audio management system
 ├── style.css               # Responsive styling
-├── game.js                 # Main game logic
+├── favicon.ico             # Game icon
+├── server.py               # Local development server
+├── start_game.sh           # Quick start script
 ├── README.md               # This file
-├── HANDOFF.md              # Technical implementation details
-└── debug/                  # Debug and test files
-    ├── debug_fish_issue.html
-    ├── test_manual_restart.html
-    ├── final_test.html
-    ├── test_group_fix.html
-    └── minimal_test.html
+└── HANDOFF.md              # Technical implementation details
 ```
 
 ## 🎯 Game Controls
 
-- **Desktop**: Click anywhere to jump
-- **Mobile**: Tap anywhere to jump
-- **Start**: Click/tap "Tap or Click Anywhere to Start" to begin
-- **Restart**: Click/tap "Click or Tap to Restart" after game over
+- **iPhone/Mobile**: Quick tap = small jump, hold to charge power 📱
+- **Desktop**: Quick click/SPACE = small jump, hold to charge power
+- **Jump Power**: Short press = small jump, long press = high jump
+- **Visual Guide**: Charge bar appears after 150ms (green → yellow → red)
+- **Quick Response**: Instant taps feel responsive without visual clutter
+- **Start**: Tap "TAP TO START" to begin
+- **Restart**: Tap "Tap to Restart" after game over
+
+### Feedback System
+- **Continuous Charging Audio**: Sustained sound that builds throughout charge (120-180Hz)
+- **Variable Jump Audio**: Sound duration extends with jump charge level (100ms → 350ms)
+- **Enhanced Audio Cues**: Clear, distinct sounds for successful jumps vs. blocked attempts
+- **Cat Animation**: Subtle bounce effect shows input was registered but invalid
+- **Throttled Feedback**: Prevents spam while maintaining clear communication
+- **Non-intrusive**: Clean feedback that doesn't disrupt gameplay flow
+- **Immediate Response**: Instant audio feedback helps players understand game state
+
+### Mobile Features
+- **Full-screen gameplay** on iPhone 14/15
+- **Safe area support** for notched screens
+- **Optimized touch controls** with no accidental zooming
+- **Responsive UI** that scales perfectly on all screen sizes
 
 ## 📋 Requirements
 
@@ -165,10 +184,19 @@ All game assets are procedurally generated:
 
 ## 📱 Mobile Support
 
-- Touch controls fully supported
-- Responsive design adapts to mobile screens
-- Audio context properly initialized after user interaction
-- Optimized for both landscape and portrait orientations
+### iPhone 14/15 Optimizations
+- **Full-screen experience** with proper safe area handling
+- **Optimized screen dimensions** (390x844 portrait, 844x390 landscape)
+- **Touch-first design** with large tap targets
+- **Prevented zooming and scrolling** for seamless gameplay
+- **Enhanced audio context** handling for iOS Safari
+
+### General Mobile Features
+- **Responsive UI scaling** for all screen sizes
+- **Portrait and landscape support** 
+- **Audio context properly initialized** after user interaction
+- **Optimized rendering** for mobile performance
+- **Smooth 60fps gameplay** on modern devices
 
 ## 🎵 Audio Features
 

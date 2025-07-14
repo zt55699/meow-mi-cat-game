@@ -37,6 +37,9 @@ This repository uses GitHub Actions for automatic deployment to GitHub Pages whe
 - **Intuitive controls**: Quick taps feel responsive without visual clutter
 - **Enhanced responsiveness**: Reduced bounce time by 50% for faster input response
 - **Clear audio feedback**: Distinct sound effects for valid vs. invalid jump attempts
+- **High score tracking**: Persistent high score system with localStorage
+- **Curved fish patterns**: Fish spawn in jump trajectory arcs (5-7 fish per pattern)
+- **Dynamic difficulty**: Fish curve heights vary from 40px to 270px
 - **Obstacle avoidance**: Avoid red boxes to survive
 - **Fish collection**: Collect blue fish to increase your score
 - **Win condition**: Reach 500 meters to win the game
@@ -49,13 +52,16 @@ This repository uses GitHub Actions for automatic deployment to GitHub Pages whe
 - **Continuous charging sound**: Sustained audio that builds during charge (150ms+ hold)
 - **Rich sound effects**: Jump, collect, game over, victory, and feedback sounds
 - **Background music**: Multiple music tracks that change during gameplay
+- **High score display**: Yellow-highlighted persistent score tracking
+- **New record celebration**: Special "NEW HIGH SCORE!" notifications
 - **Mobile-optimized**: Specially designed for iPhone 14/15 screen sizes
 - **Responsive design**: Perfect touch controls and responsive layout
 
 ### Technical Features
 - **Camera system**: Smooth camera following with cat movement
 - **Physics engine**: Arcade physics for realistic movement and collisions
-- **Spawn system**: Dynamic obstacle and fish spawning
+- **Curved spawn system**: Parabolic fish patterns matching jump trajectories
+- **Persistent data**: localStorage high score tracking across sessions
 - **State management**: Proper game state handling (start, playing, game over, win)
 - **Restart functionality**: Full game restart without page reload
 - **Audio feedback system**: Clear sound cues for all player interactions

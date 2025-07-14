@@ -6,7 +6,9 @@ let fish;
 let ground;
 let sky;
 let score = 0;
+let highScore = 0;
 let scoreText;
+let highScoreText;
 let gameOver = false;
 let gameWon = false;
 let distance = 0;
@@ -14,6 +16,7 @@ let distanceText;
 let gameOverText;
 let restartText;
 let winText;
+let finalScoreText;
 let debugMode = false;
 let debugGraphics = null;
 let gameStarted = false;
@@ -609,6 +612,17 @@ function create() {
     });
     distanceText.setScrollFactor(0); // Make it stay fixed to camera
     
+    // Load and display high score
+    loadHighScore();
+    highScoreText = this.add.text(16, isMobile ? 85 : 100, `High Score: ${highScore}`, { 
+        fontSize: distanceFontSize, 
+        fill: '#000',
+        backgroundColor: 'rgba(255,255,0,0.9)',
+        padding: { x: 10, y: 5 },
+        fontWeight: 'bold'
+    });
+    highScoreText.setScrollFactor(0); // Make it stay fixed to camera
+    
     // Show start screen
     if (!gameStarted) {
         showStartScreen(this);
@@ -807,7 +821,8 @@ function update() {
     // Check win condition
     if (distance >= WIN_DISTANCE / 10) {
         gameWon = true;
-        showWinScreen(this);
+        const isNewHighScore = checkAndUpdateHighScore();
+        showWinScreen(this, isNewHighScore);
     }
     
     // Cleanup off-screen objects
@@ -884,6 +899,12 @@ function collectFish(cat, fish) {
     fish.destroy();
     score += 10;
     scoreText.setText('Score: ' + score);
+    
+    // Update high score display if current score exceeds it
+    if (score > highScore && highScoreText) {
+        highScoreText.setText(`High Score: ${score}`);
+    }
+    
     audioManager.playEffect('collect');
 }
 
@@ -902,10 +923,13 @@ function hitObstacle(cat, obstacle) {
         jumpChargeIndicator = null;
     }
     
+    // Check for high score before showing game over screen
+    const isNewHighScore = checkAndUpdateHighScore();
+    
     audioManager.playEffect('gameOver');
     audioManager.stopMusic();
     
-    showGameOverScreen(this);
+    showGameOverScreen(this, isNewHighScore);
 }
 
 function showStartScreen(scene) {
@@ -973,21 +997,35 @@ function showStartScreen(scene) {
     });
 }
 
-function showGameOverScreen(scene) {
+function showGameOverScreen(scene, isNewHighScore = false) {
     const cameraX = scene.cameras.main.scrollX;
     const isMobile = gameDimensions.width <= 820;
     const centerX = cameraX + gameDimensions.width / 2;
     const centerY = gameDimensions.height / 2;
     
     const gameOverSize = isMobile ? '48px' : '64px';
-    gameOverText = scene.add.text(centerX, centerY - 50, 'GAME OVER', {
+    const gameOverMessage = isNewHighScore ? 'NEW HIGH SCORE!' : 'GAME OVER';
+    const gameOverColor = isNewHighScore ? '#ffff00' : '#ff0000';
+    
+    gameOverText = scene.add.text(centerX, centerY - 80, gameOverMessage, {
         fontSize: gameOverSize,
-        fill: '#ff0000',
+        fill: gameOverColor,
         fontStyle: 'bold',
         stroke: '#000000',
         strokeThickness: 3
     });
     gameOverText.setOrigin(0.5);
+    
+    // Show final score
+    const scoreSize = isMobile ? '28px' : '36px';
+    finalScoreText = scene.add.text(centerX, centerY - 30, `Final Score: ${score}`, {
+        fontSize: scoreSize,
+        fill: '#000',
+        fontStyle: 'bold',
+        backgroundColor: 'rgba(255,255,255,0.9)',
+        padding: { x: 15, y: 8 }
+    });
+    finalScoreText.setOrigin(0.5);
     
     const restartSize = isMobile ? '24px' : '32px';
     restartText = scene.add.text(centerX, centerY + 30, 'Tap to Restart', {
@@ -1003,7 +1041,7 @@ function showGameOverScreen(scene) {
     restartText.on('pointerdown', () => restartGame(scene));
 }
 
-function showWinScreen(scene) {
+function showWinScreen(scene, isNewHighScore = false) {
     scene.physics.pause();
     
     // Clean up jump charge indicator and stop charging sound
@@ -1023,17 +1061,21 @@ function showWinScreen(scene) {
     const centerY = gameDimensions.height / 2;
     
     const winSize = isMobile ? '48px' : '64px';
-    winText = scene.add.text(centerX, centerY - 80, 'YOU WIN!', {
+    const winMessage = isNewHighScore ? 'NEW HIGH SCORE!\nYOU WIN!' : 'YOU WIN!';
+    const winColor = isNewHighScore ? '#ffff00' : '#00ff00';
+    
+    winText = scene.add.text(centerX, centerY - 80, winMessage, {
         fontSize: winSize,
-        fill: '#00ff00',
+        fill: winColor,
         fontStyle: 'bold',
         stroke: '#000000',
-        strokeThickness: 3
+        strokeThickness: 3,
+        align: 'center'
     });
     winText.setOrigin(0.5);
     
     const scoreSize = isMobile ? '24px' : '32px';
-    const finalScoreText = scene.add.text(centerX, centerY - 20, 'Final Score: ' + score, {
+    finalScoreText = scene.add.text(centerX, centerY - 20, 'Final Score: ' + score, {
         fontSize: scoreSize,
         fill: '#000',
         backgroundColor: 'rgba(255,255,255,0.9)',
@@ -1057,6 +1099,52 @@ function showWinScreen(scene) {
     restartText.on('pointerdown', () => restartGame(scene));
 }
 
+// High Score Management Functions
+function loadHighScore() {
+    try {
+        const savedScore = localStorage.getItem('meowMiHighScore');
+        highScore = savedScore ? parseInt(savedScore, 10) : 0;
+        console.log('🏆 Loaded high score:', highScore);
+    } catch (e) {
+        console.log('⚠️ Could not load high score from localStorage');
+        highScore = 0;
+    }
+}
+
+function saveHighScore() {
+    try {
+        localStorage.setItem('meowMiHighScore', highScore.toString());
+        console.log('💾 Saved new high score:', highScore);
+    } catch (e) {
+        console.log('⚠️ Could not save high score to localStorage');
+    }
+}
+
+function checkAndUpdateHighScore() {
+    if (score > highScore) {
+        highScore = score;
+        saveHighScore();
+        
+        // Update high score display
+        if (highScoreText) {
+            highScoreText.setText(`High Score: ${highScore}`);
+            // Add visual feedback for new high score
+            highScoreText.setBackgroundColor('rgba(255,100,100,0.9)');
+            
+            // Reset color after 2 seconds
+            setTimeout(() => {
+                if (highScoreText) {
+                    highScoreText.setBackgroundColor('rgba(255,255,0,0.9)');
+                }
+            }, 2000);
+        }
+        
+        console.log('🎉 NEW HIGH SCORE!', highScore);
+        return true; // New high score achieved
+    }
+    return false; // No new high score
+}
+
 async function restartGame(scene) {
     console.log('🔄 Restarting game...');
     
@@ -1064,9 +1152,10 @@ async function restartGame(scene) {
     await audioManager.stopMusic();
     
     // Clean up UI elements
-    if (gameOverText) gameOverText.destroy();
-    if (winText) winText.destroy();
-    if (restartText) restartText.destroy();
+    if (gameOverText) { gameOverText.destroy(); gameOverText = null; }
+    if (winText) { winText.destroy(); winText = null; }
+    if (restartText) { restartText.destroy(); restartText = null; }
+    if (finalScoreText) { finalScoreText.destroy(); finalScoreText = null; }
     
     const finalScore = scene.children.getByName('finalScore');
     if (finalScore) finalScore.destroy();
@@ -1104,6 +1193,9 @@ async function restartGame(scene) {
     // Update UI
     scoreText.setText('Score: 0');
     distanceText.setText('Distance: 0m');
+    if (highScoreText) {
+        highScoreText.setText(`High Score: ${highScore}`);
+    }
     
     // Change music track
     audioManager.changeTrack();

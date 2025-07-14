@@ -201,6 +201,64 @@ function spawnFish() {
 - Players can collect multiple fish (5-7) in single charged jump
 - Creates strategic timing opportunities
 - Visual guidance for optimal jump paths
+- Dynamic height variation (40-270px) for varied difficulty
+
+### 5.2. High Score System
+
+**Persistent Score Tracking:**
+```javascript
+// High Score Management Functions
+function loadHighScore() {
+    try {
+        const savedScore = localStorage.getItem('meowMiHighScore');
+        highScore = savedScore ? parseInt(savedScore, 10) : 0;
+        console.log('🏆 Loaded high score:', highScore);
+    } catch (e) {
+        console.log('⚠️ Could not load high score from localStorage');
+        highScore = 0;
+    }
+}
+
+function saveHighScore() {
+    try {
+        localStorage.setItem('meowMiHighScore', highScore.toString());
+        console.log('💾 Saved new high score:', highScore);
+    } catch (e) {
+        console.log('⚠️ Could not save high score to localStorage');
+    }
+}
+
+function checkAndUpdateHighScore() {
+    if (score > highScore) {
+        highScore = score;
+        saveHighScore();
+        
+        // Update high score display with visual feedback
+        if (highScoreText) {
+            highScoreText.setText(`High Score: ${highScore}`);
+            highScoreText.setBackgroundColor('rgba(255,100,100,0.9)');
+            
+            // Reset color after 2 seconds
+            setTimeout(() => {
+                if (highScoreText) {
+                    highScoreText.setBackgroundColor('rgba(255,255,0,0.9)');
+                }
+            }, 2000);
+        }
+        
+        console.log('🎉 NEW HIGH SCORE!', highScore);
+        return true; // New high score achieved
+    }
+    return false; // No new high score
+}
+```
+
+**Features:**
+- localStorage persistence across browser sessions
+- Real-time high score display updates during gameplay
+- Visual feedback for new high score achievements
+- Enhanced game over/win screens with high score celebration
+- Automatic score comparison and saving
 
 **Visual Charge Indicator:**
 ```javascript
@@ -600,7 +658,8 @@ The game successfully implements a smooth side-scrolling experience with advance
 - **Mobile Optimization:** iPhone 14/15 specific viewport and touch handling
 - **Audio Features:** 7 different sound effects including continuous charging
 - **Input Feedback:** Visual, audio, and haptic feedback for all interactions
-- **Fish Collection:** Curved spawn patterns with 5-7 fish per arc every 3 seconds
+- **Fish Collection:** Curved spawn patterns with 5-7 fish per arc every 3 seconds (40-270px height variation)
+- **High Score System:** localStorage persistence with real-time updates and visual feedback
 - **GitHub Actions:** Automated deployment to GitHub Pages
 
 ---

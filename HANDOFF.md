@@ -164,6 +164,44 @@ function executeJump() {
 }
 ```
 
+### 5.1. Curved Fish Spawn System
+
+**Parabolic Fish Collection Patterns:**
+```javascript
+function spawnFish() {
+    const spawnX = game.scene.scenes[0].cameras.main.scrollX + gameDimensions.width + 50;
+    const groundY = gameDimensions.height - 120; // Ground level
+    const catY = groundY - 80; // Cat's approximate jump start height
+    
+    // Create a parabolic jump trajectory with 5-7 fish
+    const fishCount = Phaser.Math.Between(5, 7);
+    const horizontalSpread = 300; // Total horizontal distance of the arc
+    const maxJumpHeight = 200; // Peak height of the arc
+    
+    for (let i = 0; i < fishCount; i++) {
+        // Calculate position along the arc (0 to 1)
+        const t = i / (fishCount - 1);
+        
+        // Parabolic trajectory: y = start + height * (4*t*(1-t))
+        // This creates a downward curve that peaks at t=0.5
+        const arcHeight = maxJumpHeight * 4 * t * (1 - t);
+        const fishX = spawnX + (t * horizontalSpread);
+        const fishY = catY - arcHeight;
+        
+        // Make sure fish don't go below ground or too high
+        const clampedY = Math.max(gameDimensions.height * 0.2, Math.min(fishY, groundY - 30));
+        
+        const f = fish.create(fishX, clampedY, 'fish');
+    }
+}
+```
+
+**Benefits:**
+- Fish patterns match natural jump trajectories
+- Players can collect multiple fish (5-7) in single charged jump
+- Creates strategic timing opportunities
+- Visual guidance for optimal jump paths
+
 **Visual Charge Indicator:**
 ```javascript
 function updateJumpChargeIndicator() {
@@ -420,7 +458,7 @@ function createSpawnTimers(scene) {
         loop: true
     });
     
-    // Fish spawning every 3 seconds
+    // Fish arc spawning every 3 seconds (5-7 fish per arc)
     const fishTimer = scene.time.addEvent({
         delay: FISH_SPAWN_TIME, // 3000ms
         callback: spawnFish,
@@ -562,6 +600,7 @@ The game successfully implements a smooth side-scrolling experience with advance
 - **Mobile Optimization:** iPhone 14/15 specific viewport and touch handling
 - **Audio Features:** 7 different sound effects including continuous charging
 - **Input Feedback:** Visual, audio, and haptic feedback for all interactions
+- **Fish Collection:** Curved spawn patterns with 5-7 fish per arc every 3 seconds
 - **GitHub Actions:** Automated deployment to GitHub Pages
 
 ---

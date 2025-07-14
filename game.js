@@ -844,18 +844,37 @@ function spawnObstacle() {
 function spawnFish() {
     if (!gameStarted || gameOver || gameWon || !fish) return;
     
-    const minY = gameDimensions.height * 0.3; // 30% from top
-    const maxY = gameDimensions.height - 200; // 200px from bottom
-    const fishY = Phaser.Math.Between(minY, maxY);
     const spawnX = game.scene.scenes[0].cameras.main.scrollX + gameDimensions.width + 50;
-    const f = fish.create(spawnX, fishY, 'fish');
+    const groundY = gameDimensions.height - 120; // Ground level
+    const catY = groundY - 80; // Cat's approximate jump start height
     
-    if (f) {
-        f.setActive(true);
-        f.setVisible(true);
-        f.body.setAllowGravity(false);
-        f.body.setImmovable(true);
-        f.body.setSize(30, 20, true);
+    // Create a parabolic jump trajectory with 5-7 fish
+    const fishCount = Phaser.Math.Between(5, 7);
+    const horizontalSpread = 300; // Total horizontal distance of the arc
+    const maxJumpHeight = 200; // Peak height of the arc
+    
+    for (let i = 0; i < fishCount; i++) {
+        // Calculate position along the arc (0 to 1)
+        const t = i / (fishCount - 1);
+        
+        // Parabolic trajectory: y = start + height * (4*t*(1-t))
+        // This creates a downward curve that peaks at t=0.5
+        const arcHeight = maxJumpHeight * 4 * t * (1 - t);
+        const fishX = spawnX + (t * horizontalSpread);
+        const fishY = catY - arcHeight;
+        
+        // Make sure fish don't go below ground or too high
+        const clampedY = Math.max(gameDimensions.height * 0.2, Math.min(fishY, groundY - 30));
+        
+        const f = fish.create(fishX, clampedY, 'fish');
+        
+        if (f) {
+            f.setActive(true);
+            f.setVisible(true);
+            f.body.setAllowGravity(false);
+            f.body.setImmovable(true);
+            f.body.setSize(30, 20, true);
+        }
     }
 }
 

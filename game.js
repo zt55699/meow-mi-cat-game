@@ -851,7 +851,9 @@ function spawnFish() {
     // Create a parabolic jump trajectory with 5-7 fish
     const fishCount = Phaser.Math.Between(5, 7);
     const horizontalSpread = 300; // Total horizontal distance of the arc
-    const maxJumpHeight = 200; // Peak height of the arc
+    const baseJumpHeight = 155; // Base height of the arc
+    const heightVariation = Phaser.Math.Between(-115, 115); // Random height variation
+    const maxJumpHeight = baseJumpHeight + heightVariation; // Final randomized height (40-270px)
     
     for (let i = 0; i < fishCount; i++) {
         // Calculate position along the arc (0 to 1)
